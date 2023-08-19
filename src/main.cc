@@ -152,10 +152,24 @@ private:
     }};
 };
 
+// `renderer` class is used to generate series of images of a rotating surface.
+//
+// The renderer uses a `surface` object to sample points on the surface. It
+// applies lighting to the points using a simple Phong model. It then projects
+// the points onto a 2D plane using a perspective projection. Finally, it uses
+// a z-buffer to determine which points are visible and which are not.
+//
+// Output images are written to stdout in PPM format.
 class renderer {
 public:
+    // Creates a renderer with a given image size.
     renderer(size_t width, size_t height) 
     : _image(width, height), _z_buffer(width, height) {
+        // Camera is positioned at (0, 0, 0) and looks along the positive z
+        // axis. It follows the pinhole camera model (see
+        // https://en.wikipedia.org/wiki/Pinhole_camera_model for details).
+
+        // Field of view is 45 degrees.
         const double fov = pi / 4;
 
         // Given a field of view and an image size, compute the focal lengths.
@@ -165,6 +179,9 @@ public:
         auto ox = static_cast<double>(width) / 2;
         auto oy = static_cast<double>(height) / 2;
 
+        // Camera matrix maps points in the view space to points in image.  See
+        // https://en.wikipedia.org/wiki/Camera_matrix and
+        // https://www.baeldung.com/cs/focal-length-intrinsic-camera-parameters#camera-intrinsic-matrix
         _camera_matrix = mat<3, 3>{{
             {fx,  0.0, ox},
             {0.0, -fy,  oy},
@@ -173,6 +190,8 @@ public:
 
     }
 
+    // Given frame per second, length of the animation in seconds, and quality
+    // of the output image, renders the animation and writes it to stdout.
     void render(size_t fps, size_t length, size_t quality) {
         for (size_t frame = 0; frame < fps * length; ++frame) {
             auto t = static_cast<double>(frame) / fps;
@@ -182,9 +201,15 @@ public:
     }
 
 private:
+    // Renders a single frame of the animation to the `_image` buffer. The frame
+    // is determined by the time `t` in seconds. The `quality` parameter
+    // determines how many samples are taken per pixel (`quality^2` samples per
+    // pixel).
     void render_single_frame(double t, size_t quality) {
+        // Derive surface rotation angle from frame's time.
         auto angle = t * pi / 2;
 
+        // Rotate the surface around y axis and move it to `_surface_position`.
         auto normal = rotate_along_y(angle);
         auto transform = translate(_surface_position) * normal;
         _surface.set_transform(transform, normal);
@@ -192,6 +217,8 @@ private:
         _image.clear();
         _z_buffer.clear();
 
+        // Sample the [0, 1] x [0, 1] square `quality^2` times per pixel.
+        // Render the surface at each sample point.
         for (size_t y = 0; y < _image.height() * quality; ++y) {
             for (size_t x = 0; x < _image.width() * quality; ++x) {
                 vec<2> uv = {
@@ -204,32 +231,63 @@ private:
         }
     }
 
+    // Renders a sampled 3D point to the `_image` buffer.
+    //
+    // Note that we are rendering each `uv` sample as a single pixel. `uv`
+    // samples do not correspond to pixels on the image. By rendering a
+    // sufficiently large number of samples, we can hope to get a good coverage
+    // of the image. This isn't ideal, but it is simple and works well enough
+    // for this example.
     void render_single_sample(vec<2> uv) {
+        // Feed the surface parameter eqation with the sampled parameters `uv` to
+        // get a 3D point on the surface.
         surface::point p = _surface.sample(uv);
 
+        // Use Phong lighting model to compute the color of the point.
+        // Phong model is a simple model that approximates the way light
+        // interacts with a surface. It is composed of three components:
+        // ambient, diffuse, and specular.
+        //
+        // See https://en.wikipedia.org/wiki/Phong_reflection_model for details.
+
+        // Ambient component is a constant color that is added to the surface
+        // color. It represents the light that is reflected from other surfaces
+        // in the scene.
         const double ambient_strength = 0.1;
         vec<3> ambient = ambient_strength * _ambient_color;
 
+        // Diffuse component is computed using the Lambert's cosine law. It
+        // represents the light that is reflected from the surface in all
+        // directions equally.
         double diff = std::max(dot(p.normal, _light_direction), 0.0);
         vec<3> diffuse = diff * _light_color;
         
+        // Specular component is computed using the Phong's reflection model.
+        // It represents the light that is reflected from the surface in a
+        // mirror-like fashion.
         const double specular_strength = 0.9;
         vec<4> view_dir = {0, 0, 1, 0};
         auto reflected = reflect(_light_direction * -1.0, p.normal);
         double spec = std::pow(std::max(dot(view_dir, reflected), 0.0), 64);
         vec<3> specular = specular_strength * spec * _light_color;
 
+        // Combine all components to get the final color of the point.
         vec<3> color = (ambient + diffuse + specular) * _surface_color;
 
+        // Project the point to the image plane.
         vec<2> image_pos = from_homogeneus(_camera_matrix * from_homogeneus(p.position));
 
         long x = static_cast<long>(image_pos[0]);
         long y = static_cast<long>(image_pos[1]);
         auto z = from_homogeneus(p.position)[2];
 
+        // Clip the point if it is outside of the image plane.
         if (x < 0 || x >= (long) _image.width() || y < 0 || y >= (long) _image.height()) {
             return;
         }
+
+        // Discard the point unless it is closer than the previously rendered
+        // point at the same position.
         if (_z_buffer(x, y) < z) {
             return;
         }
@@ -238,7 +296,10 @@ private:
         _image(x, y) = color;
     }
 
+    // Slightly red ambient light.
     const vec<3> _ambient_color = {0.1, 0, 0};
+
+    // White-ish light coming from the top-left.
     const vec<3> _light_color = {1, 0.9, 0.8};
     const vec<4> _light_direction = normalize<4>({-0.5, -0.5, 1.0, 0});
 
