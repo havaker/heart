@@ -79,6 +79,19 @@ namespace ffi {
     }
 }
 
+// `surface` class provides a way to sample points on a pre-defined 3D surface.
+//
+// The surface is defined by a parametric equation, in python module
+// `src/codegen/surface.py`. Thanks to `sympy`'s code generation abillities, the
+// equation can be translated to C code and used here (see the `ffi` namespace
+// and the `codegen` directory for more details) .
+//
+// The surface is defined in a coordinate system where the surface is centered
+// at the origin. The surface is then transformed to world coordinates by
+// applying a model transform and a world transform. The model transform is
+// applied first, and is used to scale and rotate the surface. The world
+// transform is applied second, and is used to position the surface in the
+// world.
 class surface {
 public:
     struct point {
@@ -86,7 +99,12 @@ public:
         vec<4> normal = {0.0, 0.0, 0.0, 0.0};
     };
 
-    // Returns a sampled point on the surface in world coordinates.
+    // Samples point on the surface in world coordinates.
+    // Input vector `uv`
+    // (which contains parameters for the surface equation) should be in the
+    // range [0, 1] x [0, 1].
+    // Returns a point on the surface in world coordinates together with the
+    // normal vector at that point.
     point sample(vec<2> uv) const {
         uv = to_sample_space * uv;
         point result;
@@ -99,6 +117,16 @@ public:
         return result;
     }
 
+    // Sets the world transform for the surface.
+    //
+    // The world transform is used to position the surface in the world - it
+    // maps the surface's local coordinate system to the world coordinate
+    // system.
+    //
+    // The transform is split into two parts. The first one contains all
+    // world-space transformations, such as translation, rotation, and scaling.
+    // The second one should contain only transformations that can be
+    // applied to normals (such as rotation).
     void set_transform(mat<4, 4> transform, mat<4, 4> normal) {
         _world_transform = transform;
         _world_normal = normal;
@@ -108,9 +136,16 @@ private:
     mat<4, 4> _world_transform = translate({0.0, 0.0, 0.0});
     mat<4, 4> _world_normal = translate({0.0, 0.0, 0.0});
 
+    // Model transform is used to scale the surface to a reasonable size and
+    // rotate it so that its larger dimensions are along x y axes.
+    //
+    // Similarly to the world transform, the model transform is split into two
+    // parts.
     const mat<4, 4> _model_normal = rotate_along_x(-pi / 2);
     const mat<4, 4> _model_transform = scale(1.0 / 20) * _model_normal;
 
+    // The equation for the surface should be sampled in range [0, 2pi] x [0,
+    // pi]. This matrix is used to transform the input vector to that range.
     const mat<2,2> to_sample_space = {{
         {2.0 * std::numbers::pi, 0.0},
         {0.0, std::numbers::pi}
