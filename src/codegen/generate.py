@@ -6,7 +6,8 @@ from sympy.utilities.codegen import codegen
 
 u, v = sympy.symbols('u v', real=True)
 
-# ****'s parametric **** surface equation:
+# Julias's parametric heart surface equation (ref
+# https://math.stackexchange.com/a/3935220):
 x = sin(v) * (15 * sin(u) - 4 * sin(3 * u))
 y = 8 * cos(v)
 z = sin(v) * (15 * cos(u) - 5 * cos(2 * u) - 2 * cos(3 * u) - cos(4 * u))
