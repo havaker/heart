@@ -3,7 +3,7 @@
 C++ stdlib-only renderer that generates a sequence of images to create an
 animation of a rotating heart-shaped surface. B-day gift for @ainnnia :)))
 
-https://github.com/havaker/heart/assets/41525193/2af59099-dcb3-4ca0-b20c-47ac4a83a267
+https://github.com/havaker/heart/assets/41525193/32af7cde-45d6-4f82-8fc8-b66cdc2d927c
 
 ## How it Works
 
