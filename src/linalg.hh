@@ -98,17 +98,6 @@ constexpr vec<N> normalize(vec<N> v) {
     return v / length(v);
 }
 
-template<size_t N, size_t M>
-constexpr mat<M, N> transpose(mat<N, M> m) {
-    mat<M, N> result = {};
-    for (size_t i = 0; i < N; ++i) {
-        for (size_t j = 0; j < M; ++j) {
-            result[j][i] = m[i][j];
-        }
-    }
-    return result;
-}
-
 inline vec<4> to_homogeneus(vec<3> v) {
     return vec<4>{v[0], v[1], v[2], 1.0};
 }
@@ -155,16 +144,6 @@ inline mat<4,4> translate(vec<3> offset) {
         {0.0, 0.0, 1.0, offset[2]},
         {0.0, 0.0, 0.0, 1.0}
     }};
-}
-
-inline mat<3, 3> top_left_submatrix(mat<4, 4> m) {
-    mat<3, 3> result;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++i) {
-            result[i][j] = m[i][j];
-        }
-    }
-    return result;
 }
 
 inline vec<4> reflect(vec<4> ray, vec<4> normal) {
@@ -233,19 +212,5 @@ namespace test {
            {102.0, 126.0, 150.0}
         }},
         "matrix-matrix multiplication is incorrect"
-    );
-
-    // Test transpose.
-    static_assert(
-        transpose(mat<3, 3>{{
-           {1.0, 2.0, 3.0},
-           {4.0, 5.0, 6.0},
-           {7.0, 8.0, 9.0}
-        }}) == mat<3, 3>{{
-           {1.0, 4.0, 7.0},
-           {2.0, 5.0, 8.0},
-           {3.0, 6.0, 9.0}
-        }},
-        "transpose is incorrect"
     );
 }
