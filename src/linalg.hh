@@ -1,12 +1,7 @@
 #pragma once
 
-#include <cstddef>
-#include <iostream>
 #include <array>
 #include <cmath>
-#include <numbers>
-#include <algorithm>
-#include <vector>
 
 template <size_t N>
 using vec = std::array<double, N>;
