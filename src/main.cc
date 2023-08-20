@@ -8,6 +8,8 @@
 
 using std::numbers::pi;
 
+// Represents an image with pixels of type `vec<3>`.
+// Colors are represented as RGB vectors with values in the range [0, 1].
 class image {
 public:
     image(size_t width, size_t height) : _width(width), _height(height) {
@@ -26,10 +28,13 @@ public:
         return _height;
     }
 
+    // Clears the image by setting all pixels to black.
     void clear() {
         std::fill(_pixels.begin(), _pixels.end(), vec<3>{0.0, 0.0, 0.0});
     }
 
+    // Prints the image in PPM format to stdout.
+    // https://en.wikipedia.org/wiki/Netpbm#File_formats
     void print_ppm() {
         std::cout << "P3\n" << _width << " " << _height << "\n255\n";
         for (size_t y = 0; y < _height; ++y) {
