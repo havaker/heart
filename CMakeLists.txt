@@ -16,7 +16,7 @@ set_target_properties(renderer PROPERTIES
 )
 
 # Add compile options
-target_compile_options(renderer PUBLIC -Wall -Wfloat-conversion)
+target_compile_options(renderer PUBLIC -Wall -Wextra -Wfloat-conversion)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
   set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES 
