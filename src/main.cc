@@ -59,6 +59,13 @@ private:
     size_t _height;
 };
 
+// Represents a depth buffer.
+//
+// The depth buffer is used to keep track of the closest point to the camera at
+// each pixel. The depth buffer is initialized with the maximum possible depth at
+// each pixel. When a point is drawn at a pixel, its depth is compared to the
+// depth stored in the buffer. If the point is closer to the camera, it is
+// drawn, and its depth is stored in the buffer.
 class z_buffer {
 public:
     z_buffer(size_t width, size_t height) : _width(width) {
