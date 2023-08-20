@@ -1,7 +1,7 @@
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <numbers>
-#include <algorithm>
 #include <vector>
 
 #include "linalg.hh"
