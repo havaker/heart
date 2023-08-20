@@ -345,7 +345,8 @@ int main(int argc, char** argv) {
            quality = 3;
 
     const char* usage = " [--help] [--width <width>] [--height <height>] [--fps <fps>] [--length <length>] [--quality <quality>]";
-    const char* help_message = "Render a rotating surface.\n"
+    const char* help_message = "Render a rotating surface by printing a sequence of PPM images to the\n"
+                               "standard output.\n"
                                "\n"
                                "Arguments:\n"
                                "  --width <width>     Width of the output image in pixels. Default: 256.\n"
