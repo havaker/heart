@@ -94,6 +94,11 @@ namespace ffi {
 // world.
 class surface {
 public:
+    // The convention kept throughout the code is that points and vectors are
+    // using homogeneous coordinates. A point is represented as a 4-dimensional
+    // vector, where the last coordinate is 1.0, and a vector is represented as
+    // a 4-dimensional vector, where the last coordinate is 0.0. This allows
+    // using the same transformation matrices for both points and vectors.
     struct point {
         vec<4> position = {0.0, 0.0, 0.0, 1.0};
         vec<4> normal = {0.0, 0.0, 0.0, 0.0};
