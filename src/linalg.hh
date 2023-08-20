@@ -146,6 +146,7 @@ inline mat<4,4> translate(vec<3> offset) {
     }};
 }
 
+// See the image at https://math.stackexchange.com/q/13261.
 inline vec<4> reflect(vec<4> ray, vec<4> normal) {
     return ray - 2 * dot(ray, normal) * normal;
 }
