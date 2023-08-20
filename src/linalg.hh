@@ -114,19 +114,19 @@ constexpr mat<M, N> transpose(mat<N, M> m) {
     return result;
 }
 
-static inline vec<4> to_homogeneus(vec<3> v) {
+inline vec<4> to_homogeneus(vec<3> v) {
     return vec<4>{v[0], v[1], v[2], 1.0};
 }
 
-static inline vec<3> from_homogeneus(vec<4> v) {
+inline vec<3> from_homogeneus(vec<4> v) {
     return vec<3>{v[0] / v[3], v[1] / v[3], v[2] / v[3]};
 }
 
-static inline vec<2> from_homogeneus(vec<3> v) {
+inline vec<2> from_homogeneus(vec<3> v) {
     return vec<2>{v[0] / v[2], v[1] / v[2]};
 }
 
-static inline mat<4,4> scale(double factor) {
+inline mat<4,4> scale(double factor) {
     return mat<4,4>{{
         {factor, 0.0, 0.0, 0.0},
         {0.0, factor, 0.0, 0.0},
@@ -135,7 +135,7 @@ static inline mat<4,4> scale(double factor) {
     }};
 }
 
-static inline mat<4,4> rotate_along_y(double angle) {
+inline mat<4,4> rotate_along_y(double angle) {
     return mat<4,4>{{
         {std::cos(angle), 0.0, std::sin(angle), 0.0},
         {0.0, 1.0, 0.0, 0.0},
@@ -144,7 +144,7 @@ static inline mat<4,4> rotate_along_y(double angle) {
     }};
 }
 
-static inline mat<4,4> rotate_along_x(double angle) {
+inline mat<4,4> rotate_along_x(double angle) {
     return mat<4,4>{{
         {1.0, 0.0, 0.0, 0.0},
         {0.0, std::cos(angle), -std::sin(angle), 0.0},
@@ -153,7 +153,7 @@ static inline mat<4,4> rotate_along_x(double angle) {
     }};
 }
 
-static inline mat<4,4> translate(vec<3> offset) {
+inline mat<4,4> translate(vec<3> offset) {
     return mat<4,4>{{
         {1.0, 0.0, 0.0, offset[0]},
         {0.0, 1.0, 0.0, offset[1]},
@@ -162,7 +162,7 @@ static inline mat<4,4> translate(vec<3> offset) {
     }};
 }
 
-static inline mat<3, 3> top_left_submatrix(mat<4, 4> m) {
+inline mat<3, 3> top_left_submatrix(mat<4, 4> m) {
     mat<3, 3> result;
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++i) {
@@ -172,7 +172,7 @@ static inline mat<3, 3> top_left_submatrix(mat<4, 4> m) {
     return result;
 }
 
-static inline vec<4> reflect(vec<4> ray, vec<4> normal) {
+inline vec<4> reflect(vec<4> ray, vec<4> normal) {
     return ray - 2 * dot(ray, normal) * normal;
 }
 
