@@ -196,9 +196,16 @@ public:
         auto ox = static_cast<double>(width) / 2;
         auto oy = static_cast<double>(height) / 2;
 
-        // Camera matrix maps points in the view space to points in image.  See
-        // https://en.wikipedia.org/wiki/Camera_matrix and
+        // Camera matrix (also known as projection matrix) maps points in the
+        // view space to points in image. In this renderer, the view space is
+        // the same as the world space (Relations between world, view, and
+        // projection spaces are described here:
+        // https://learnopengl.com/Getting-started/Coordinate-Systems and there:
+        // https://gamedev.stackexchange.com/a/56203).
+        //
+        // See https://en.wikipedia.org/wiki/Camera_matrix and
         // https://www.baeldung.com/cs/focal-length-intrinsic-camera-parameters#camera-intrinsic-matrix
+        // for details on how the camera matrix is constructed.
         _camera_matrix = mat<3, 3>{{
             {fx,  0.0, ox},
             {0.0, -fy,  oy},
